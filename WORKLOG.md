@@ -1,10 +1,11 @@
 # Work Log
 
-## GROUP MEMBER 1
+## Jonathan Shavit
 
-### date x
+### May 17, 2023
 
-info
+- cloned the repo, started filling out the worklog.
+- gonna do some research now [links tba]
 
 ### date y
 
