@@ -3,7 +3,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include <unistd.#include <stdio.h>
+#include <unistd.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -80,29 +81,4 @@ int main() {
 
     return 0;
 }
-h>
-void encode(char *filename, char *keyfile, char *newfile){
-    int filefd = open(filename, O_RDWR);
-    if(filefd < 1){
-        printf("text file%s\n",strerror(errno));  
-        exit(1);  
-    }
-    // key has to be 16 charectars long
-    int keyfd = open(keyfile, O_RDONLY);
-     if(keyfd < 1){
-        printf("key file %s\n",strerror(errno));  
-        exit(1);  
-    }
-    char key[16];
-    int arg = read(keyfd, key, 16);
-    printf("the bytes read %d\n",arg );
-    
 
-    
-    
-    
-}
-
-int main(){
-    encode("file", "key", "newfile");
-}
