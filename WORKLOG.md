@@ -14,10 +14,9 @@ info
 
 ## GROUP MEMBER 2
 
-### date x
-
-info
-
-### date y
-
-info
+### May 18th, 2023
+Cloned repo
+Started research into CBC implementation.
+### May 19th, 2023
+Research shows that working on CBC implememtation is not feasible.
+Began work on ECB encoder.
