@@ -4,81 +4,71 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define BLOCK_SIZE 16
 
-void ecb_encrypt(char *plaintext, char *key, char *ciphertext) {
-    // Perform ECB encryption using the provided key
-
-    // Implement your own logic for ECB encryption here
-    // This code is for demonstration purposes only and should not be used for secure encryption
-
-    // Example: XOR the plaintext with the key
-    for (int i = 0; i < BLOCK_SIZE; i++) {
-        ciphertext[i] = plaintext[i] ^ key[i];
+void encode(char *filename, char *keyfile, char *newfile) {
+    int filefd = open(filename, O_RDONLY);
+    if (filefd < 1) {
+        printf("Error opening text file: %s\n", strerror(errno));
+        exit(1);
     }
+
+    int keyfd = open(keyfile, O_RDONLY);
+    if (keyfd < 1) {
+        printf("Error opening key file: %s\n", strerror(errno));
+        exit(1);
+    }
+
+    int newfilefd = open(newfile, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    if (newfilefd < 1) {
+        printf("Error creating/opening new file: %s\n", strerror(errno));
+        exit(1);
+    }
+
+    char key[BLOCK_SIZE];
+    int key_bytes_read = read(keyfd, key, BLOCK_SIZE);
+    if (key_bytes_read < BLOCK_SIZE) {
+        printf("Key file doesn't contain enough bytes\n");
+        exit(1);
+    }
+
+    char plaintext[BLOCK_SIZE];
+    char ciphertext[BLOCK_SIZE];
+
+    ssize_t bytes_read;
+    ssize_t bytes_written;
+
+    while ((bytes_read = read(filefd, plaintext, BLOCK_SIZE)) > 0) {
+        // Perform the encoding operation here
+        // Modify the plaintext to obtain the ciphertext using the provided key
+
+        // Example: XOR the plaintext with the key
+        int i;
+        for (i = 0; i < BLOCK_SIZE; i++) {
+            ciphertext[i] = plaintext[i] ^ key[i];
+        }
+
+        bytes_written = write(newfilefd, ciphertext, bytes_read);
+        if (bytes_written != bytes_read) {
+            printf("Error writing to the new file: %s\n", strerror(errno));
+            exit(1);
+        }
+    }
+
+    if (bytes_read < 0) {
+        printf("Error reading the text file: %s\n", strerror(errno));
+        exit(1);
+    }
+
+    printf("Encoding completed successfully.\n");
+
+    close(filefd);
+    close(keyfd);
+    close(newfilefd);
 }
 
 int main() {
-    char key[BLOCK_SIZE + 1];  // +1 for null terminator
-    printf("Enter the key (16 characters): ");
-    scanf("%16s", key);
-
-    char filename[100];
-    printf("Enter the filename to read the text from: ");
-    scanf("%99s", filename);
-
-    FILE *file = fopen(filename, "rb");
-    if (file == NULL) {
-        printf("Error opening the file.\n");
-        return 1;
-    }
-
-    fseek(file, 0, SEEK_END);
-    long file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    char *plaintext = (char *)malloc(file_size + 1);
-    fread(plaintext, 1, file_size, file);
-    plaintext[file_size] = '\0';
-
-    fclose(file);
-
-    int num_blocks = (file_size + BLOCK_SIZE - 1) / BLOCK_SIZE;
-
-    char *ciphertext = (char *)malloc(num_blocks * BLOCK_SIZE + 1);
-    ciphertext[num_blocks * BLOCK_SIZE] = '\0';
-
-    for (int i = 0; i < num_blocks; i++) {
-        char *current_plaintext = plaintext + (i * BLOCK_SIZE);
-        char *current_ciphertext = ciphertext + (i * BLOCK_SIZE);
-
-        if (i == num_blocks - 1 && file_size % BLOCK_SIZE != 0) {
-            // Padding the last block if it's not a multiple of BLOCK_SIZE
-            memset(current_plaintext + (file_size % BLOCK_SIZE), 0, BLOCK_SIZE - (file_size % BLOCK_SIZE));
-        }
-
-        ecb_encrypt(current_plaintext, key, current_ciphertext);
-    }
-
-    FILE *newfile = fopen("newfile", "wb");
-    if (newfile == NULL) {
-        printf("Error creating the new file.\n");
-        return 1;
-    }
-
-    fwrite(ciphertext, 1, num_blocks * BLOCK_SIZE, newfile);
-
-    fclose(newfile);
-
-    printf("Encryption completed. Encrypted text written to 'newfile'.\n");
-
-    free(plaintext);
-    free(ciphertext);
-
+    encode("file", "key", "newfile");
     return 0;
 }
-
