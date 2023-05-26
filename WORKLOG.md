@@ -20,3 +20,6 @@ Started research into CBC implementation.
 ### May 19th, 2023
 Research shows that working on CBC implememtation is not feasible.
 Began work on ECB encoder.
+
+
+### May 19th, 2023

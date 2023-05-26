@@ -5,7 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#define BLOCK_SIZE 16
 
 void encode(char *filename, char *keyfile, char *newfile) {
     int filefd = open(filename, O_RDONLY);
@@ -26,26 +25,24 @@ void encode(char *filename, char *keyfile, char *newfile) {
         exit(1);
     }
 
-    char key[BLOCK_SIZE];
-    int key_bytes_read = read(keyfd, key, BLOCK_SIZE);
-    if (key_bytes_read < BLOCK_SIZE) {
+    char key[16];
+    int key_bytes_read = read(keyfd, key, 16);
+    if (key_bytes_read < 16) {
         printf("Key file doesn't contain enough bytes\n");
         exit(1);
     }
 
-    char plaintext[BLOCK_SIZE];
-    char ciphertext[BLOCK_SIZE];
+    char plaintext[16];
+    char ciphertext[16];
 
     ssize_t bytes_read;
     ssize_t bytes_written;
 
-    while ((bytes_read = read(filefd, plaintext, BLOCK_SIZE)) > 0) {
+    while ((bytes_read = read(filefd, plaintext, 16)) > 0) {
         // Perform the encoding operation here
         // Modify the plaintext to obtain the ciphertext using the provided key
 
-        // Example: XOR the plaintext with the key
-        int i;
-        for (i = 0; i < BLOCK_SIZE; i++) {
+        for(int i = 0; i < 16; i++) {
             ciphertext[i] = plaintext[i] ^ key[i];
         }
 
