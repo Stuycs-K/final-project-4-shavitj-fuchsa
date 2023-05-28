@@ -22,4 +22,8 @@ Research shows that working on CBC implememtation is not feasible.
 Began work on ECB encoder.
 
 
-### May 19th, 2023
+### May 25th, 2023
+Wrote the first part of an DES cipher. 
+
+### May 27th, 2023
+Created the permutation 1 for the key.
