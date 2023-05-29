@@ -1,20 +1,107 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-// void bytes_to_bits(const unsigned char* bytes, unsigned int* bits) {
-//     for (int i = 0; i < 8; i++) {
-//         for (int j = 0; j < 8; j++) {
-//             unsigned char byte = bytes[i];
-//             unsigned char bit = (byte >> j) & 1;
-//             int index = (i * 8) + j;
-//             bits[index] = bit;
-//         }
-//     }
-// }
+int roundnum[] = {
+ 1   
+ };
+
+int initial_message_permutation[] =	   {58, 50, 42, 34, 26, 18, 10, 2,
+										60, 52, 44, 36, 28, 20, 12, 4,
+										62, 54, 46, 38, 30, 22, 14, 6,
+										64, 56, 48, 40, 32, 24, 16, 8,
+										57, 49, 41, 33, 25, 17,  9, 1,
+										59, 51, 43, 35, 27, 19, 11, 3,
+										61, 53, 45, 37, 29, 21, 13, 5,
+										63, 55, 47, 39, 31, 23, 15, 7};
+
+int sub_key_56_to_48[] =     {14, 17, 11, 24,  1,  5,
+								 3, 28, 15,  6, 21, 10,
+								23, 19, 12,  4, 26,  8,
+								16,  7, 27, 20, 13,  2,
+								41, 52, 31, 37, 47, 55,
+								30, 40, 51, 45, 33, 48,
+								44, 49, 39, 56, 34, 53,
+								46, 42, 50, 36, 29, 32};
+
+void convertCharArrayToBits(char charArray[], int intArray[]) {
+    int i, j;
+
+    for (i = 0, j = 0; i < 8; i++, j += 8) {
+        char c = charArray[i];
+
+        for (int k = 7; k >= 0; k--) {
+            intArray[j + k] = (c >> k) & 1;
+        }
+    }
+}
+
+//scarmbles the bits of the block of cipher
+ void initial_text_permutation(int * plaintext_bits, int * permutation_bits){
+        for(int i = 0; i < 64; i++){
+            int index = initial_message_permutation[i];
+            permutation_bits[i] = plaintext_bits[index];
+        }
+    }
+
+
+// shifts and int array a certain amount of spaces
+// negative numbers to shfit to the lefts
+void shift_array(int arr[], int len, int shift){
+
+    int temp[len];
+
+    for(int i=0; i < len; i++)
+
+        temp[i] = arr[i];
+
+    if(shift > 0) {
+
+        for(int i=0; i < shift; i++)
+
+            arr[i] = temp[len-i-1];
+
+   
+        for(int i=shift; i < len; i++)
+
+            arr[i] = temp[i-shift];
+
+    }
+
+    else if(shift < 0) {
+
+        for(int i=0; i < len - abs(shift); i++){
+
+            arr[i] = temp[i + abs(shift)];
+
+        }
+        for(int i=len-abs(shift); i < len; i++){
+
+            arr[i] = temp[i - abs(shift)];
+        }
+    };
+
+}
+
+void combineArrays(int* array1, int* array2, int* combinedArray) {
+    int i;
+
+    for (i = 0; i < 28; i++) {
+        combinedArray[i] = array1[i];
+    }
+
+    for (i = 0; i < 28; i++) {
+        combinedArray[i + 28] = array2[i];
+    }
+}
 
 // removes every 8th bit
-//key will be a lenth of 8 bytes where every char will either have avalue of 0 or 1
-void deleteEvery8thBit(const unsigned char* input, unsigned int* output) {
+//key will be a length of 8 bytes where every char will either have avalue of 0 or 1
+// key is a string of 8 charectars
+// each value of the int array represetns the value of the bits
+void deleteEvery8thBit(unsigned char* input, unsigned int* output) {
     int temparr[64];
     for (int i = 0; i < 8; i++) {
         unsigned char byte = input[i];
@@ -31,34 +118,89 @@ void deleteEvery8thBit(const unsigned char* input, unsigned int* output) {
             c++;
         }
     }
-    // for (int i = 0; i < 56; i++) {
-    //     int srcIndex = i + (i / 7);
-    //     int bitIndex = i % 8;
-    //     unsigned int srcByte = bits[srcIndex];
-    //     output[i] = (srcByte >> bitIndex) & 1;
-    // }
+    
+    // creates a key 48 bit key given a 56 bit key
+    // key_48 must be size 48 
+    // key_56 must be size 56
+    void select_48_of_56_bits(int * key_56, int * key_48){
+        for(int i = 0; i < 48; i++){
+            int index = sub_key_56_to_48[i];
+            key_48[i] = key_56[index];
+        }
+    }
+    
+}
+// splits 64 bit text into left side of 32 bits and right side of 32 bits
+void split_text_in_2(int *text_64, int *lpt_32, int *rpt_32){
+    for(int i = 0; i<32; i++){
+        lpt_32[i] = text_64[i];
+        rpt_32[i] = text_64[i + 32];
+    }
 }
 
+// splits 58 bit key into left side of 28 bits and right side of 28 bits
+void split_key_in_2(int *key_56, int *lkey_28, int *rkey_28){
+    for(int i = 0; i<28; i++){
+        lkey_28[i] = key_56[i];
+        rkey_28[i] = key_56[i + 28];
+    }
+}
 
-// gives 56 bit key
-// void initial_key_permutation(char* key){ 
-//     unsigned int array[64];
-//     bytes_to_bits(key, array);
-//     unsigned char modifiedkey[56];
-//     deleteEvery8thByte(array, modifiedkey);
-//     return modifiedkey;
-// }
-
-
+// takes an array of size 4 and add the 1st and 4th values to the end to make an array of 6
+void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[])
+{
+    for(int i=0; i<len_in / 4; i++) {
+        for(int j=0; j<4; j++)
+            arr_out[i * 6 + j] = arr_in[i * 4 + j];
+        
+        arr_out[i * 6 + 4] = arr_in[i * 4];
+        arr_out[i * 6 + 5] = arr_in[i * 4 + 3];
+    }
+}
 
 int main(){
-    int *arr = malloc(56 * sizeof(int));
-    char *it = "87654321";
-    deleteEvery8thBit("87654321", arr);
-    for(int i = 0; i < 8; i++){
-        printf("char: %u\n",it[i]);
+    char *initial_key = malloc(8);
+    char *plaintext = malloc(8);
+    plaintext = "12345678";
+    initial_key = "12345678";
+
+    // text arrays
+    int *plain_bits_64 = malloc(64 * sizeof(int));
+    int *first_permutation_64 = malloc(64 * sizeof(int));
+    int *lpt_32 = malloc(32 * sizeof(int));
+    int *rpt_32 = malloc(32 * sizeof(int));
+
+    //key arrays
+    int *key_64 = malloc(64 * sizeof(int));
+    int *key_56 = malloc(56 * sizeof(int));
+    int *key_48 = malloc(48 * sizeof(int));
+    int *lkey_28 = malloc(28 * sizeof(int));
+    int *rkey_28 = malloc(28 * sizeof(int));
+
+    // text operations
+    convertCharArrayToBits(plaintext, plain_bits_64);
+    initial_text_permutation(plain_bits_64, first_permutation_64);
+    split_text_in_2(first_permutation_64, lpt_32, rpt_32);
+
+    // key operations
+    convertCharArrayToBits(initial_key, key_64);
+    deleteEvery8thBit(key_64, key_56);
+
+    for(int round = 1; round <= 16; round++){
+        // controls how much to do a left shift
+        int shift = -2;
+        if(round = 1 | 2 | 9 | 16){
+            shift = -1;
+        }
+
+        split_key_in_2(key_56, lkey_28, rkey_28);
+        shift_array(lkey_28, 28, shift);
+        shift_array(rkey_28, 28, shift);
+        combineArrays(lkey_28, rkey_28, key_56);
+        select_48_of_56_bits(key_56, key_48);
+        // key is read to be used for encryption
+
     }
-    for(int i = 0; i < 56; i++){
-        printf("char: %u\n", arr[i]);
-    }
+
+    
 }

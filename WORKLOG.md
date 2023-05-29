@@ -27,3 +27,9 @@ Wrote the first part of an DES cipher.
 
 ### May 27th, 2023
 Created the permutation 1 for the key.
+
+### May 28th, 2023
+Created initial permutation table and key permuation table.
+Made key compression. 
+Made ip permuation.
+Made method to shift arrays.
