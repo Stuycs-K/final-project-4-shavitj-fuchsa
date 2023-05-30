@@ -147,8 +147,7 @@ void split_key_in_2(int *key_56, int *lkey_28, int *rkey_28){
 }
 
 // takes an array of size 4 and add the 1st and 4th values to the end to make an array of 6
-void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[])
-{
+void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[]){
     for(int i=0; i<len_in / 4; i++) {
         for(int j=0; j<4; j++)
             arr_out[i * 6 + j] = arr_in[i * 4 + j];
