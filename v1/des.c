@@ -157,6 +157,19 @@ void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[]){
     }
 }
 
+// expands the rpt from 32 bits to 48 bits
+// adds 4 bits from rpt_32 to expanded_48 and then add bits 1 and 4 to the end
+void expand_rpt(int *rpt_32, int *expanded_48){
+    int shift = 0;
+    for(int i = 0; i<32; i+=4){
+        expanded_48[i + shift] = rpt_32[i];
+        expanded_48[i + shift + 1] = rpt_32[i + 1];
+        expanded_48[i + shift + 2] = rpt_32[i + 2];
+        expanded_48[i + shift + 3] = rpt_32[i + 3];
+        shfit += 2
+    }
+}
+
 int main(){
     char *initial_key = malloc(8);
     char *plaintext = malloc(8);
@@ -197,6 +210,7 @@ int main(){
         shift_array(rkey_28, 28, shift);
         combineArrays(lkey_28, rkey_28, key_56);
         select_48_of_56_bits(key_56, key_48);
+        
         // key is read to be used for encryption
 
     }

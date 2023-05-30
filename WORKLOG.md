@@ -33,3 +33,7 @@ Created initial permutation table and key permuation table.
 Made key compression. 
 Made ip permuation.
 Made method to shift arrays.
+
+### May 29th, 2023
+made methods that would divide both the key and the text.
+Made a method to expand the right side of cipher
