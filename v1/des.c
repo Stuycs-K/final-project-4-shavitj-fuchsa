@@ -166,7 +166,9 @@ void expand_rpt(int *rpt_32, int *expanded_48){
         expanded_48[i + shift + 1] = rpt_32[i + 1];
         expanded_48[i + shift + 2] = rpt_32[i + 2];
         expanded_48[i + shift + 3] = rpt_32[i + 3];
-        shfit += 2
+        expanded_48[i + shift + 4] = rpt_32[i];
+        expanded_48[i + shift + 5] = rpt_32[i + 3];
+        shift += 2;
     }
 }
 
