@@ -147,14 +147,26 @@ void split_key_in_2(int *key_56, int *lkey_28, int *rkey_28){
 }
 
 // takes an array of size 4 and add the 1st and 4th values to the end to make an array of 6
-void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[])
-{
+void expand_array_4_to_6(int arr_in[], int len_in, int arr_out[]){
     for(int i=0; i<len_in / 4; i++) {
         for(int j=0; j<4; j++)
             arr_out[i * 6 + j] = arr_in[i * 4 + j];
         
         arr_out[i * 6 + 4] = arr_in[i * 4];
         arr_out[i * 6 + 5] = arr_in[i * 4 + 3];
+    }
+}
+
+// expands the rpt from 32 bits to 48 bits
+// adds 4 bits from rpt_32 to expanded_48 and then add bits 1 and 4 to the end
+void expand_rpt(int *rpt_32, int *expanded_48){
+    int shift = 0;
+    for(int i = 0; i<32; i+=4){
+        expanded_48[i + shift] = rpt_32[i];
+        expanded_48[i + shift + 1] = rpt_32[i + 1];
+        expanded_48[i + shift + 2] = rpt_32[i + 2];
+        expanded_48[i + shift + 3] = rpt_32[i + 3];
+        shfit += 2
     }
 }
 
@@ -198,6 +210,7 @@ int main(){
         shift_array(rkey_28, 28, shift);
         combineArrays(lkey_28, rkey_28, key_56);
         select_48_of_56_bits(key_56, key_48);
+        
         // key is read to be used for encryption
 
     }
