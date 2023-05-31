@@ -170,6 +170,23 @@ expansion_rpt(int *rpt_32, int *expanded_48){
     }
 }
 
+void scramble_bits(int *arr_in, int len_in, int map[4][16], int *arr_out){
+    for(int k=0; k<len_in / 6; k++) {
+        int i = k * 6;
+        int i_row = arr_in[i] * 2 + arr_in[i+5]; // 1st and 6th bits compose row number
+        int i_col = 0; 
+        
+        for(int j=1; j<5; j++) 
+            i_col += arr_in[i+j] * pow(2, 4-j); // 2-5 bits compose col number
+
+        int n = map[i_row][i_col];
+        
+        i = k * 4;
+        for(int j=0; j<4; j++)
+            arr_out[i+j] = (n >> (3-j)) & 1;
+    }
+}
+
 int main(){
     char *initial_key = malloc(8);
     char *plaintext = malloc(8);
