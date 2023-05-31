@@ -37,3 +37,8 @@ Made method to shift arrays.
 ### May 29th, 2023
 made methods that would divide both the key and the text.
 Made a method to expand the right side of cipher
+
+### May 30th, 2023
+Created tables.h
+Wrote the xoring of key 
+Rewrote the expansion method using the correct model.

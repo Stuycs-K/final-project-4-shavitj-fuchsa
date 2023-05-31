@@ -3,28 +3,13 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "tables.h"
 
 int roundnum[] = {
  1   
  };
 
-int initial_message_permutation[] =	   {58, 50, 42, 34, 26, 18, 10, 2,
-										60, 52, 44, 36, 28, 20, 12, 4,
-										62, 54, 46, 38, 30, 22, 14, 6,
-										64, 56, 48, 40, 32, 24, 16, 8,
-										57, 49, 41, 33, 25, 17,  9, 1,
-										59, 51, 43, 35, 27, 19, 11, 3,
-										61, 53, 45, 37, 29, 21, 13, 5,
-										63, 55, 47, 39, 31, 23, 15, 7};
 
-int sub_key_56_to_48[] =     {14, 17, 11, 24,  1,  5,
-								 3, 28, 15,  6, 21, 10,
-								23, 19, 12,  4, 26,  8,
-								16,  7, 27, 20, 13,  2,
-								41, 52, 31, 37, 47, 55,
-								30, 40, 51, 45, 33, 48,
-								44, 49, 39, 56, 34, 53,
-								46, 42, 50, 36, 29, 32};
 
 void convertCharArrayToBits(char charArray[], int intArray[]) {
     int i, j;
@@ -119,17 +104,21 @@ void deleteEvery8thBit(unsigned char* input, unsigned int* output) {
         }
     }
     
-    // creates a key 48 bit key given a 56 bit key
-    // key_48 must be size 48 
-    // key_56 must be size 56
-    void select_48_of_56_bits(int * key_56, int * key_48){
-        for(int i = 0; i < 48; i++){
-            int index = sub_key_56_to_48[i];
-            key_48[i] = key_56[index];
-        }
-    }
+    
     
 }
+
+// creates a key 48 bit key given a 56 bit key
+// key_48 must be size 48 
+// key_56 must be size 56
+void select_48_of_56_bits(int * key_56, int * key_48){
+    for(int i = 0; i < 48; i++){
+        int index = sub_key_56_to_48[i];
+        key_48[i] = key_56[index];
+    }
+}
+
+
 // splits 64 bit text into left side of 32 bits and right side of 32 bits
 void split_text_in_2(int *text_64, int *lpt_32, int *rpt_32){
     for(int i = 0; i<32; i++){
@@ -172,6 +161,15 @@ void expand_rpt(int *rpt_32, int *expanded_48){
     }
 }
 
+// This might be the correct way to do it??? 
+// This is correct
+expansion_rpt(int *rpt_32, int *expanded_48){
+    for(int i = 0; i < 48; i++){
+        int index = expand[i];
+        expanded_48[i] = rpt_32[index];
+    }
+}
+
 int main(){
     char *initial_key = malloc(8);
     char *plaintext = malloc(8);
@@ -183,6 +181,8 @@ int main(){
     int *first_permutation_64 = malloc(64 * sizeof(int));
     int *lpt_32 = malloc(32 * sizeof(int));
     int *rpt_32 = malloc(32 * sizeof(int));
+    int *expanded_48 = malloc(48 * sizeof(int));
+    int *xor_holder_48 = malloc(48 * sizeof(int));
 
     //key arrays
     int *key_64 = malloc(64 * sizeof(int));
@@ -198,7 +198,7 @@ int main(){
 
     // key operations
     convertCharArrayToBits(initial_key, key_64);
-    deleteEvery8thBit(key_64, key_56);
+    deleteEvery8thBit(initial_key, key_56);
 
     for(int round = 1; round <= 16; round++){
         // controls how much to do a left shift
@@ -211,11 +211,17 @@ int main(){
         shift_array(lkey_28, 28, shift);
         shift_array(rkey_28, 28, shift);
         combineArrays(lkey_28, rkey_28, key_56);
-        select_48_of_56_bits(key_56, key_48);
-        
+        select_48_of_56_bits(key_56, key_48);        
         // key is read to be used for encryption
 
+        // rpt is xored by key
+        expansion_rpt(rpt_32, expanded_48);
+        for (int i = 0; i < 48; i++){
+            xor_holder_48[i] = expanded_48[i] ^ key_48[i];
+        }
+
+        
     }
 
-    
+    return 0;
 }
