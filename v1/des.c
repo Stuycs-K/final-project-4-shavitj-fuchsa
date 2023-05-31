@@ -220,6 +220,7 @@ int main(){
             xor_holder_48[i] = expanded_48[i] ^ key_48[i];
         }
 
+        // substiution boxes function goes here
         
     }
 
