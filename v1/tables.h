@@ -95,7 +95,7 @@ int sub_key_56_to_48[] =     {14, 17, 11, 24,  1,  5,
 };
 
 /* Post S-Box permutation */
- int P[] = {
+ int post_Sbox[] = {
     16, 7, 20, 21,
     29, 12, 28, 17,
     1, 15, 23, 26,
