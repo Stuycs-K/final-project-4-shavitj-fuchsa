@@ -3,6 +3,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <math.h>
 #include "tables.h"
 
 int roundnum[] = {
@@ -163,14 +164,14 @@ void expand_rpt(int *rpt_32, int *expanded_48){
 
 // This might be the correct way to do it??? 
 // This is correct
-expansion_rpt(int *rpt_32, int *expanded_48){
+void expansion_rpt(int *rpt_32, int *expanded_48){
     for(int i = 0; i < 48; i++){
         int index = expand[i];
         expanded_48[i] = rpt_32[index];
     }
 }
 
-void scramble_bits(int *arr_in, int len_in, int map[4][16], int *arr_out){
+void sbox_substiution(int *arr_in, int len_in, int map[4][16], int *arr_out){
     for(int k=0; k<len_in / 6; k++) {
         int i = k * 6;
         int i_row = arr_in[i] * 2 + arr_in[i+5]; // 1st and 6th bits compose row number
@@ -236,9 +237,11 @@ int main(){
         for (int i = 0; i < 48; i++){
             xor_holder_48[i] = expanded_48[i] ^ key_48[i];
         }
-
-        // substiution boxes function goes here
         
+        // substiution boxes function goes here
+        for (int i = 0; i < 8; i++){
+            
+        }
     }
 
     return 0;
