@@ -42,3 +42,7 @@ Made a method to expand the right side of cipher
 Created tables.h
 Wrote the xoring of key 
 Rewrote the expansion method using the correct model.
+
+### May 31st, 2023
+Wrote the sbox subsitiution.
+Made the necessary xor operations

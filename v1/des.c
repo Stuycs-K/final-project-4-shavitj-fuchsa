@@ -263,7 +263,7 @@ int main(){
     for(int round = 1; round <= 16; round++){
         // controls how much to do a left shift
         int shift = -2;
-        if(round = 1 | 2 | 9 | 16){
+        if(round == 1 | round == 2 | round == 9 | round == 16){
             shift = -1;
         }
 
