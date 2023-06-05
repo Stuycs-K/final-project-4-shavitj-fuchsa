@@ -6,29 +6,29 @@
 #include <math.h>
 #include "tables.h"
 
-int roundnum[] = {
- 1   
- };
 
-
-
-void convertCharArrayToBits(char charArray[], int intArray[]) {
+void convertCharArrayToBits(char charArray[8], int intArray[64]) {
     int i, j;
+    for (i = 0; i < 8; i++) {
 
-    for (i = 0, j = 0; i < 8; i++, j += 8) {
         char c = charArray[i];
 
         for (int k = 7; k >= 0; k--) {
-            intArray[j + k] = (c >> k) & 1;
+
+            intArray[8*i + 7-k] = (c >> k) & 1;
+
         }
+
     }
+
 }
+
 
 //scarmbles the bits of the block of cipher
  void initial_text_permutation(int * plaintext_bits, int * permutation_bits){
         for(int i = 0; i < 64; i++){
             int index = initial_message_permutation[i];
-            permutation_bits[i] = plaintext_bits[index];
+            permutation_bits[i] = plaintext_bits[index-1];
         }
     }
 
@@ -115,7 +115,7 @@ void deleteEvery8thBit(unsigned char* input, unsigned int* output) {
 void select_48_of_56_bits(int * key_56, int * key_48){
     for(int i = 0; i < 48; i++){
         int index = sub_key_56_to_48[i];
-        key_48[i] = key_56[index];
+        key_48[i] = key_56[index - 1];
     }
 }
 
@@ -167,43 +167,41 @@ void expand_rpt(int *rpt_32, int *expanded_48){
 void expansion_rpt(int *rpt_32, int *expanded_48){
     for(int i = 0; i < 48; i++){
         int index = expand[i];
-        expanded_48[i] = rpt_32[index];
+        expanded_48[i] = rpt_32[index -1];
     }
 }
 
-void sbox_substiution(int *arr_in, int len_in, int *arr_out){
+void sbox_substiution(int *arr_in_48, int len_in, int *arr_out_32){
     for(int k=0; k<len_in / 6; k++) {
         int i = k * 6;
-        int i_row = arr_in[i] * 2 + arr_in[i+5]; // 1st and 6th bits compose row number
+        int i_row = arr_in_48[i] * 2 + arr_in_48[i+5]; // 1st and 6th bits compose row number
         int i_col = 0; 
         
         for(int j=1; j<5; j++) 
-            i_col += arr_in[i+j] * pow(2, 4-j); // 2-5 bits compose col number
+            i_col += arr_in_48[i+j] * pow(2, 4-j); // 2-5 bits compose col number
 
         int n = S[k][i_row * 16 + i_col];
         
         i = k * 4;
         for(int j=0; j<4; j++)
-            arr_out[i+j] = (n >> (3-j)) & 1;
+            arr_out_32[i+j] = (n >> (3-j)) & 1;
     }
 }
 
-void substitute_via_table(int *arr_in, 
-int len_in, 
-int * table, 
-int len_table, 
-int *arr_out, 
-int len_out){
-    if((len_in != len_out) | (len_in != len_table)){
-        printf("lengths dont match\n");
-        return;
-    }
+void substitute_via_table(int *arr_in, int len_in, int * table, int len_table, int *arr_out, int len_out){
+    // if((len_in != len_out) | (len_in < len_table)){
+    //     printf("lengths dont match\n");
+    //     return;
+    // }
     for(int i = 0; i < len_table; i++){
         int index = table[i];
-        arr_out[i] = arr_in[index];
+        // printf("sub_table index %d\n", index);
+        // printf("index %d\n",i);
+        arr_out[i] = arr_in[index - 1];
     }
 }
 
+// convert int array to string
 void convert_to_char_array(int *arr, char *charArr, int size_arr) {
     int i, j;
     for (i = 0, j = 0; i < size_arr; i += 8, j++) {
@@ -215,87 +213,141 @@ void convert_to_char_array(int *arr, char *charArr, int size_arr) {
         charArr[j] = ch;
     }
 }
+
+void int_array_drop_8 (int arr_in[], int len_in, int arr_out[]){
+    for(int i = 0, j = 0; i < len_in; i++, j++ )
+
+    {
+
+        if((i+1) % 8 == 0)
+
+            j--;
+
+        else
+
+            arr_out[j] = arr_in[i];
+
+    }
+
+}
+
+
 void printArray(int *arr, int size) {
     int i;
-    for (i = 0; i < size; i++) {
-        printf("%d ", arr[i]);
+    for (i = 1; i <= size; i++) {
+        printf("%d ", arr[i - 1]);
+        if(i % 7 == 0){
+            printf(" ");
+        }
     }
     printf("\n");
 }
 
+//shift to the left
+void leftCircularShift(int arr[], int length, int shift){
+    shift = shift % length; // To handle cases where shift > n
+
+    for (int i = 0; i < shift; i++){
+        int temp = arr[0];
+        for (int j = 0; j < length - 1; j++)
+        {
+            arr[j] = arr[j + 1];
+        }
+        arr[length - 1] = temp;
+    }
+}
+
 int main(){
-    char *initial_key = malloc(8);
-    char *plaintext = malloc(8);
-    plaintext = "12345678";
-    initial_key = "12345678";
+   
+    char *plaintext = "12345656";
+    char *initial_key = "abrfgffg";
 
     // text arrays
-    int *plain_bits_64 = malloc(64 * sizeof(int));
-    int *first_permutation_64 = malloc(64 * sizeof(int));
-    int *lpt_32 = malloc(32 * sizeof(int));
-    int *rpt_32 = malloc(32 * sizeof(int));
-    int *expanded_48 = malloc(48 * sizeof(int));
-    int *xor_holder_48 = malloc(48 * sizeof(int));
-    int *after_sbox_32 = malloc(32 * sizeof(int));
-    int *post_sbox_permuation_32 = malloc(32 * sizeof(int));
-    int *final_64 = malloc(64 * sizeof(int));
+    int plain_bits_64[64];
+    int first_permutation_64[64];
+    int lpt_32[32];
+    int rpt_32[32];
+    int work_rpt_32[32];
+    int expanded_48[48];
+    int xor_holder_48[48];
+    int after_sbox_32[32];
+    int post_sbox_permuation_32[32];
+    int final_64[64];
 
 
     //key arrays
-    int *key_64 = malloc(64 * sizeof(int));
-    int *key_56 = malloc(56 * sizeof(int));
-    int *key_48 = malloc(48 * sizeof(int));
-    int *lkey_28 = malloc(28 * sizeof(int));
-    int *rkey_28 = malloc(28 * sizeof(int));
+    int key_64[64] ;
+    int key_56[56] ;
+    int key_48[48] ;
+    int lkey_28[28]; 
+    int rkey_28[28]; 
 
     // text operations
     convertCharArrayToBits(plaintext, plain_bits_64);
-    printArray(plain_bits_64, 64);
+    // printArray(plain_bits_64, 64);
     initial_text_permutation(plain_bits_64, first_permutation_64);
     split_text_in_2(first_permutation_64, lpt_32, rpt_32);
-
+    for(int i = 0; i<32; i++){
+        work_rpt_32[i] = rpt_32[i];
+    }
     // key operations
     convertCharArrayToBits(initial_key, key_64);
-        printArray(key_64, 64);
-
-    deleteEvery8thBit(initial_key, key_56);
+    int *temp = malloc(64 * sizeof(int));
+    substitute_via_table(key_64, 64, first_key_perm_table, 56, key_56, 56);
+    // printf("\n");
+    
 
     for(int round = 1; round <= 16; round++){
         // controls how much to do a left shift
-        int shift = -2;
+        int shift = 2;
         if(round == 1 | round == 2 | round == 9 | round == 16){
-            shift = -1;
+            shift = 1;
         }
 
         split_key_in_2(key_56, lkey_28, rkey_28);
-        shift_array(lkey_28, 28, shift);
-        shift_array(rkey_28, 28, shift);
+        leftCircularShift(lkey_28, 28, shift);
+        leftCircularShift(rkey_28, 28, shift);
         combineArrays(lkey_28, 28, rkey_28, 28, key_56);
-        select_48_of_56_bits(key_56, key_48);        
+
+            // for(int i = 1; i <= 56; i++ ){
+            //     key_56[i - 1] = i;  
+            // }
+            
+            // printArray(key_56, 56);
+
+        select_48_of_56_bits(key_56, key_48);
+        // printArray(key_48, 48);
+   
         // key is read to be used for encryption
 
         // rpt is xored by key
-        expansion_rpt(rpt_32, expanded_48);
+        expansion_rpt(work_rpt_32, expanded_48);
         for(int i = 0; i < 48; i++){
-            xor_holder_48[i] = expanded_48[i] ^ key_48[i];
+            // xor_holder_48[i] = i;
+            xor_holder_48[i] = (int) expanded_48[i] ^ key_48[i];
         }
         
         // substiution boxes function goes here
+       
         sbox_substiution(xor_holder_48, 48, after_sbox_32);            
-        
+       
         // post sbox permutation
         substitute_via_table(after_sbox_32, 32, post_Sbox, 32, post_sbox_permuation_32, 32);
-
-        int temp[32]; 
+// 
+        int temp1[32]; 
         // switch the rpt and lpt 
         for(int i = 0; i < 32; i++){
-            temp[i] = lpt_32[i] ^ post_sbox_permuation_32[i];
-            rpt_32[i] = lpt_32[i];
+            temp1[i] = lpt_32[i] ^ post_sbox_permuation_32[i];
+            work_rpt_32[i] = lpt_32[i];
             lpt_32[i] = post_sbox_permuation_32[i];
         }
 
     }
-        combineArrays(rpt_32, 32, lpt_32, 32, final_64);
+
+        printArray(lpt_32, 32);
+                printArray(work_rpt_32, 32);
+
+        combineArrays(work_rpt_32, 32, lpt_32, 32, final_64);
         int *a = malloc(64 * sizeof(int));
         substitute_via_table(final_64, 64, PI, 64, a, 64);
         char *charArr= malloc(8);
