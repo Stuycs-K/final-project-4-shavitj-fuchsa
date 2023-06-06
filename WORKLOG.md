@@ -157,7 +157,7 @@ Wrote the sbox subsitiution.
 Made the necessary xor operations
 
 ### June 1st, 2023
-Finished encryptor
+Finished encryptor`
 
 # Sites Consulted
 
