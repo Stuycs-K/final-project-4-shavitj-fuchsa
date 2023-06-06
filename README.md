@@ -20,7 +20,3 @@ https://github.com/Stuycs-K/final-project-4-shavitj-fuchsa/blob/main/HOMEWORK.md
 
 # Link to Presentation
 https://github.com/Stuycs-K/final-project-4-shavitj-fuchsa/blob/main/PRESENTATION.md
-
-# Link to Worklog
-https://github.com/Stuycs-K/final-project-4-shavitj-fuchsa/blob/main/WORKLOG.md
-
