@@ -257,10 +257,10 @@ void leftCircularShift(int arr[], int length, int shift){
     }
 }
 
-int main(){
+int main(int argc, char const *argv[]){
    
-    char *plaintext = "12345656";
-    char *initial_key = "abrfgffg";
+    char *plaintext = argv[1];
+    char *initial_key = argv[2];
 
     // text arrays
     int plain_bits_64[64];
@@ -344,8 +344,8 @@ int main(){
 
     }
 
-        printArray(lpt_32, 32);
-                printArray(work_rpt_32, 32);
+        // printArray(lpt_32, 32);
+        //         printArray(work_rpt_32, 32);
 
         combineArrays(work_rpt_32, 32, lpt_32, 32, final_64);
         int *a = malloc(64 * sizeof(int));
