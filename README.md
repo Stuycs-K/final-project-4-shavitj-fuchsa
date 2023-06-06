@@ -9,7 +9,9 @@ At this time, no libraries are needed to run the code.
 Use the makefile to run the code in the following format:
 ``` bash
 make encrypt ARGS="MESSAGE KEY"
+
 ```
+xxd -p file.txt and get your result in hexadecimal
 <!---[tentative, might make parameters]--->
 <!---You will be prompted to enter a message, then a key.
 The output will then be printed to terminal.--->

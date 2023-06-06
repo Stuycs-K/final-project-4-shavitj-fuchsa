@@ -352,7 +352,7 @@ int main(int argc, char const *argv[]){
         substitute_via_table(final_64, 64, PI, 64, a, 64);
         char *charArr= malloc(8);
         convert_to_char_array(a, charArr, 64);
-        int fd = open("file", O_WRONLY | O_CREAT, 0666);
+        int fd = open("file.txt", O_WRONLY | O_CREAT, 0666);
         write(fd, charArr, sizeof(charArr));
 
     return 0;
