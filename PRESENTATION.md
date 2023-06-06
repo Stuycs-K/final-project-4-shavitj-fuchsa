@@ -18,7 +18,7 @@ A Fiestel Structure is a design model used to build various symmetric block ciph
 A fiestel cipher structure is symmetric, which means that passing text encrypted via a fiestel cipher through the fiestel cipher again (using the same key) undoes the encryption.
 So running text through a fiestel cipher twice (using the same key) has no effect.
 
-<img src="img/DES-overall.png" alt= “” width="300" height="7500">
+<img src="img/DES-overall.png" alt= “” width="300" height="750">
 <!---![](img/DES-overall.png)--->
 
 It starts and ends with an initial/final permutation, between which the block is split in halfand goes through 16 rounds of: the right plaintext being passed through a Fiestel function, XORed with the left plaintext and becoming the new right plaintext, while the old right plaintext becomes the new left plaintext. The Fiestel function itself works as follows:
