@@ -156,6 +156,8 @@ Rewrote the expansion method using the correct model.
 Wrote the sbox subsitiution.
 Made the necessary xor operations
 
+### June 1st, 2023
+Finished encryptor
 
 # Sites Consulted
 
