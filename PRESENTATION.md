@@ -11,7 +11,7 @@ DES also happens to be a block cipher. A block cipher is a cipher which operates
 [there's more to say, I'm pretty sure]
 Both algorithms accept two inputs: an input block of size n bits and a key of size k bits; and both yield an n-bit output block.
 
-#### Fiestel Cipher
+### Fiestel Cipher
 
 A Fiestel Structure is a design model used to build various symmetric block ciphers, like DES.
 
@@ -26,17 +26,17 @@ It starts and ends with an initial/final permutation, between which the block is
 
 A plaintext expansion of the right plaintext,
 
-###### - plaintext expansion
+#### - plaintext expansion
 
 - One half of the 32-bit plaintext is expanded to 48 bits using the expansion permutation
 
-###### - key mixing
+#### - key mixing
 
 - The 48-bit expanded plaintext is then XORed with a sub-key
 - Sub-keys for each round (16 total) are created using the key schedule (the 56-bit key is bit-shifted and then permuted to make the sub-keys)
 - ![diagram](img/DES-key-schedule.png)
 
-###### - substitution (s-box)
+#### - substitution (s-box)
 
 - This is a non-linear transformation, and provides the core of DES' security. (It also brings the text size back to 32 bits for the next step)
 - The block is divided into 8 groups of 6 bits, and the outer two and inner four bits are used as row and column numbers (respectively) in a lookup table.
@@ -44,11 +44,11 @@ A plaintext expansion of the right plaintext,
 
 ![s1](img/s1.png)
 
-###### - permutaion (p-box)
+#### - permutaion (p-box)
 
 - Then the bits are permuted in a fixed pattern according to the p-box (a permutation function).
 
-
+<!----
 ### Modes:
 
 #### ECB Mode
@@ -72,6 +72,8 @@ This means that identical blocks of plaintext will not have identical ciphertext
 
 ![image](img/CBC-mode.png)
 ![diagram](img/Tux_secure-mode.png)
+
+---->
 
 ### Cracking
 
