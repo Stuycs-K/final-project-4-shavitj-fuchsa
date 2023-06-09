@@ -8,7 +8,7 @@ The project is a DES encoder tool that supports encryption of 8 bytes.
 At this time, no libraries are needed to run the code.
 Use the makefile to run the code in the following format:
 ``` bash
-make encrypt ARGS="MESSAGE KEY"
+make run ARGS="MESSAGE KEY"
 
 ```
 xxd -p file.txt and get your result in hexadecimal
